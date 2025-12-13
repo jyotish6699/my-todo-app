@@ -1,0 +1,8 @@
+CONTAINER ID   IMAGE                COMMAND                  CREATED              STATUS                          PORTS                                             NAMES
+cd62bd615438   my-todo-app-client   "docker-entrypoint.s…"   About a minute ago   Exited (1) About a minute ago                                                     my-todo-app-client-1
+cce953c0a3a3   my-todo-app-server   "docker-entrypoint.s…"   About a minute ago   Up About a minute               0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp       my-todo-app-server-1
+98de092424b5   mongo                "docker-entrypoint.s…"   About a minute ago   Up About a minute               0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp   my-todo-app-mongo-1
+43591bd4da6e   hello-world          "/hello"                 5 days ago           Exited (0) 5 days ago                                                             magical_hypatia
+5c0ad5d7604b   react-basic-app      "docker-entrypoint.s…"   5 days ago           Exited (143) 5 days ago                                                           react-basic-app-1
+63bdf99d0c95   1ae579da0bfe         "docker-entrypoint.s…"   5 days ago           Exited (255) 39 minutes ago     5173/tcp                                          interesting_chandrasekhar
+f49a02eb2d9e   my-first-app         "docker-entrypoint.s…"   3 weeks ago          Exited (1) 3 weeks ago                                                            busy_banzai
