@@ -38,6 +38,8 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      profilePic: user.profilePic,
+      settings: user.settings,
       token: generateToken(user._id),
     })
   } else {
@@ -70,6 +72,8 @@ const loginUser = asyncHandler(async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      profilePic: user.profilePic,
+      settings: user.settings,
       token: generateToken(user._id),
     })
   } else {
@@ -91,6 +95,49 @@ const generateToken = (id) => {
     expiresIn: '30d',
   })
 }
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+const updateUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id)
+
+  if (user) {
+    user.name = req.body.name !== undefined ? req.body.name : user.name
+    user.email = req.body.email !== undefined ? req.body.email : user.email
+    user.profilePic = req.body.profilePic !== undefined ? req.body.profilePic : user.profilePic
+    
+    if (req.body.settings) {
+        // Ensure settings object exists
+        if (!user.settings) user.settings = {};
+        
+        // Manual update to ensure Mongoose detects changes
+        if (req.body.settings.defaultColor !== undefined) user.settings.defaultColor = req.body.settings.defaultColor;
+        if (req.body.settings.defaultFontSize !== undefined) user.settings.defaultFontSize = req.body.settings.defaultFontSize;
+        if (req.body.settings.defaultFontStyle !== undefined) user.settings.defaultFontStyle = req.body.settings.defaultFontStyle;
+        if (req.body.settings.dashboardColor !== undefined) user.settings.dashboardColor = req.body.settings.dashboardColor;
+    }
+
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10)
+      user.password = await bcrypt.hash(req.body.password, salt)
+    }
+
+    const updatedUser = await user.save()
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      profilePic: updatedUser.profilePic,
+      settings: updatedUser.settings,
+      token: generateToken(updatedUser._id),
+    })
+  } else {
+    res.status(404)
+    throw new Error('User not found')
+  }
+})
 
 // @desc    Delete user data
 // @route   DELETE /api/users/me
@@ -142,9 +189,72 @@ const deleteUser = asyncHandler(async (req, res) => {
     res.status(200).json({ id: req.user.id, message: "User archived and deleted" })
 })
 
+// @desc    Restore archived user
+// @route   POST /api/users/restore
+// @access  Public
+const restoreArchivedUser = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const DeletedUser = require('../models/DeletedUser')
+    const Todo = require('../models/Todo')
+
+    // If no email provided, and we are looking for 'jyotish', try to find him?
+    // But better to enforce email.
+    if (!email) {
+        res.status(400)
+        throw new Error('Please provide email to restore')
+    }
+
+    const deletedUser = await DeletedUser.findOne({ 
+        email: { $regex: email, $options: 'i' } 
+    }).sort({ createdAt: -1 });
+
+    if (!deletedUser) {
+        res.status(404)
+        throw new Error('No archived user found with that email')
+    }
+
+    const existingUser = await User.findOne({ email: deletedUser.email });
+    let userId;
+    let passwordMsg = "";
+
+    if (existingUser) {
+        userId = existingUser._id;
+        passwordMsg = "User account already exists. Restored data to it.";
+    } else {
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash('password123', salt)
+        
+        const newUser = await User.create({
+            _id: deletedUser.originalId,
+            name: deletedUser.name,
+            email: deletedUser.email,
+            password: hashedPassword
+        })
+        userId = newUser._id;
+        passwordMsg = "Account restored. Temporary password: 'password123'";
+    }
+
+    if (deletedUser.savedTodos && deletedUser.savedTodos.length > 0) {
+        const todosToInsert = deletedUser.savedTodos.map(t => ({
+            user: userId,
+            text: t.text,
+            completed: t.completed,
+            createdAt: t.createdAt
+        }));
+        await Todo.insertMany(todosToInsert);
+    }
+
+    res.status(200).json({ 
+        message: `Success! ${passwordMsg}. Restored ${deletedUser.savedTodos?.length || 0} todos.`,
+        email: deletedUser.email
+    })
+})
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
   deleteUser,
+  updateUser,
+  restoreArchivedUser,
 }

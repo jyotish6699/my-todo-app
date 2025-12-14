@@ -22,6 +22,9 @@ const setTodo = asyncHandler(async (req, res) => {
   const todo = await Todo.create({
     text: req.body.text,
     user: req.user.id,
+    color: req.body.color,
+    fontSize: req.body.fontSize,
+    fontStyle: req.body.fontStyle
   })
 
   res.status(200).json(todo)
@@ -56,6 +59,7 @@ const updateTodo = asyncHandler(async (req, res) => {
 
   res.status(200).json(updatedTodo)
 })
+
 
 // @desc    Delete todo
 // @route   DELETE /api/todos/:id

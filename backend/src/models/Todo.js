@@ -22,7 +22,10 @@ const todoSchema = mongoose.Schema(
     position: {
         x: { type: Number, default: 0 },
         y: { type: Number, default: 0 }
-    }
+    },
+    color: { type: String, default: '' },
+    fontSize: { type: String, default: '18px' },
+    fontStyle: { type: String, default: 'sans-serif' }
   },
   {
     timestamps: true,

@@ -54,7 +54,7 @@ function Register() {
        <div className="max-w-4xl w-full bg-white rounded-3xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col md:flex-row h-[600px] relative z-10">
            
            {/* Left Side - Visuals */}
-           <div className="w-full md:w-1/2 bg-gradient-to-br from-indigo-600 to-purple-700 relative overflow-hidden flex items-center justify-center p-8">
+           <div className="hidden md:flex w-full md:w-1/2 bg-gradient-to-br from-indigo-600 to-purple-700 relative overflow-hidden items-center justify-center p-8">
                {/* Decorative Circles matching the image */}
                <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-white/10 backdrop-blur-lg rounded-full mix-blend-overlay"></div>
                <div className="absolute bottom-1/3 right-1/4 w-40 h-40 bg-pink-500/30 rounded-full mix-blend-overlay blur-xl"></div>
@@ -69,6 +69,23 @@ function Register() {
            {/* Right Side - Form */}
            <div className="w-full md:w-1/2 p-8 md:p-12 bg-white flex flex-col justify-center relative">
                 <div className="max-w-sm w-full mx-auto">
+                    
+                    <div className="flex justify-end mb-4">
+                        <Link to="/" className="text-sm font-bold text-gray-500 hover:text-fuchsia-600 transition flex items-center gap-1">
+                            Skip to Guest Mode &rarr;
+                        </Link>
+                    </div>
+
+                    {/* Mobile Tab Switcher */}
+                    <div className="flex md:hidden w-full mb-8 bg-gray-100 p-1 rounded-xl">
+                        <Link to="/login" className="flex-1 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 text-center">
+                            Log In
+                        </Link>
+                        <button className="flex-1 py-2 text-sm font-bold text-fuchsia-600 bg-white rounded-lg shadow-sm">
+                            Sign Up
+                        </button>
+                    </div>
+
                     <h2 className="text-3xl font-bold text-gray-900 mb-8 border-b-4 border-fuchsia-500 inline-block pb-1">Sign Up</h2>
                     
                     {isError && (

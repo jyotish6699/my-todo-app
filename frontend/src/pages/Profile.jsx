@@ -14,15 +14,25 @@ function Profile() {
 
   return (
     <Layout>
-      <div className="h-full overflow-y-auto custom-scrollbar pb-20">
+      <div className="h-full overflow-y-auto no-scrollbar pb-20">
           <div className="max-w-4xl mx-auto pt-10">
             <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-700 overflow-hidden transition-colors">
                 
                 {/* Header */}
                 <div className="h-32 bg-gradient-to-r from-brand-500 to-brand-600 relative">
+                    <button 
+                        onClick={() => navigate(-1)} 
+                        className="absolute top-4 left-4 z-10 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg backdrop-blur-sm transition font-medium flex items-center gap-2"
+                    >
+                        &larr; Back
+                    </button>
                     <div className="absolute -bottom-16 left-8">
                         <div className="w-32 h-32 rounded-full border-4 border-white dark:border-dark-800 bg-gray-200 flex items-center justify-center text-5xl text-gray-400 font-bold overflow-hidden shadow-md">
-                            {user.name.charAt(0).toUpperCase()}
+                            {user?.profilePic ? (
+                                <img src={user.profilePic} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                                (user && user.name) ? user.name.charAt(0).toUpperCase() : 'G'
+                            )}
                         </div>
                     </div>
                 </div>
@@ -71,10 +81,7 @@ function Profile() {
                                     <p className="text-gray-900 dark:text-gray-200 font-medium">•••••••••••••</p>
                                     <button className="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:underline mt-1">Change Password</button>
                                 </div>
-                                 <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Account ID</label>
-                                    <p className="text-gray-500 dark:text-gray-400 font-mono text-sm">{user._id}</p>
-                                </div>
+
                             </div>
                         </div>
                     </div>

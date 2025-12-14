@@ -15,6 +15,27 @@ export const AuthProvider = ({ children }) => {
   const [isSuccess, setIsSuccess] = useState(false)
   const [message, setMessage] = useState('')
 
+  // Hydrate full user profile (images/settings) on app load
+  useEffect(() => {
+    const fetchFullProfile = async () => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser && storedUser.token) {
+            try {
+                const freshData = await authService.getMe(storedUser.token);
+                // getMe returns user object (without token usually), merge it
+                setUser(prev => ({ ...prev, ...freshData, token: storedUser.token }));
+            } catch (error) {
+                console.error("Failed to refresh profile:", error);
+                if (error.response?.status === 401) {
+                    authService.logout();
+                    setUser(null);
+                }
+            }
+        }
+    };
+    fetchFullProfile();
+  }, [])
+
   const register = useCallback(async (userData) => {
     setIsLoading(true)
     try {
@@ -64,12 +85,38 @@ export const AuthProvider = ({ children }) => {
       }
   }, [user])
 
+  const updateProfile = useCallback(async (userData) => {
+    setIsLoading(true)
+    try {
+      if (!user || !user.token) return false;
+      const data = await authService.updateProfile(userData, user.token)
+      setUser(data)
+      setIsSuccess(true)
+      return true;
+    } catch (error) {
+      setIsError(true)
+      setMessage(error.response?.data?.message || error.message)
+      return false;
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user])
+
   const reset = useCallback(() => {
     setIsError(false)
     setIsSuccess(false)
     setIsLoading(false)
     setMessage('')
   }, [])
+  const refetchUser = useCallback(async () => {
+      if (!user || !user.token) return;
+      try {
+          const freshData = await authService.getMe(user.token);
+          setUser(prev => ({ ...prev, ...freshData, token: user.token }));
+      } catch (error) {
+          console.error("Failed to refetch user:", error);
+      }
+  }, [user]);
 
   const value = useMemo(() => ({
     user,
@@ -81,8 +128,10 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     deleteAccount,
+    updateProfile,
+    refetchUser, // Expose this
     reset,
-  }), [user, isLoading, isError, isSuccess, message, register, login, logout, deleteAccount, reset])
+  }), [user, isLoading, isError, isSuccess, message, register, login, logout, deleteAccount, updateProfile, refetchUser, reset])
 
   return (
     <AuthContext.Provider value={value}>

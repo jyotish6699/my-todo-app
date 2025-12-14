@@ -56,6 +56,22 @@ function Login() {
            {/* Left Side - Form */}
            <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col justify-center bg-white relative">
                 
+                <div className="flex justify-end mb-4">
+                    <Link to="/" className="text-sm font-bold text-gray-500 hover:text-indigo-600 transition flex items-center gap-1">
+                        Skip to Guest Mode &rarr;
+                    </Link>
+                </div>
+
+                {/* Mobile Tab Switcher */}
+                <div className="flex md:hidden w-full mb-8 bg-gray-100 p-1 rounded-xl">
+                    <button className="flex-1 py-2 text-sm font-bold text-indigo-600 bg-white rounded-lg shadow-sm">
+                        Log In
+                    </button>
+                    <Link to="/register" className="flex-1 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 text-center">
+                        Sign Up
+                    </Link>
+                </div>
+
                 {/* Logo */}
                 <div className="mb-10 flex items-center gap-3">
                      <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">

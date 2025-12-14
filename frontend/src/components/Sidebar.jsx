@@ -1,9 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaTasks, FaCalendarDay, FaStar, FaRegCheckCircle, FaUserCircle, FaCog, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
+import { FaTasks, FaCalendarDay, FaStar, FaRegCheckCircle, FaUserCircle, FaCog, FaSignOutAlt, FaSignInAlt, FaTimes } from 'react-icons/fa';
 import { useContext, useState } from 'react';
 import AuthContext from '../context/AuthContext';
 
-function Sidebar() {
+function Sidebar({ isOpen, toggle }) {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,19 +22,33 @@ function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-sidebar dark:bg-dark-800 h-screen border-r border-gray-100 dark:border-dark-700 flex flex-col pt-8 px-4 hidden md:flex transition-colors duration-200">
+    <aside className={`fixed inset-y-0 left-0 z-[60] bg-white dark:bg-dark-800 border-r border-gray-200 dark:border-dark-700 transform transition-all duration-300 ease-in-out md:relative md:flex md:flex-col md:z-0 overflow-hidden
+       ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-0 border-none opacity-0'} `}>
+      
+        {/* Mobile Close Button */}
+        <button 
+            onClick={toggle}
+            className="md:hidden absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        >
+            <FaTimes size={24} />
+        </button>
+
       {/* Profile Section */}
-      <div className="relative mb-10 z-50">
+      <div className="relative p-6 border-b border-gray-100 dark:border-dark-700 flex items-center gap-4">
         <div 
             onClick={() => user && setIsDropdownOpen(!isDropdownOpen)} 
             className={`flex items-center gap-3 px-2 p-2 rounded-xl transition-colors group ${user ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700' : ''}`}
         >
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md transition-transform ${user ? 'bg-brand-500 group-hover:scale-105' : 'bg-gray-400'}`}>
-                {user ? user.name.charAt(0).toUpperCase() : 'G'}
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md overflow-hidden transition-transform ${user ? 'bg-brand-500 group-hover:scale-105' : 'bg-gray-400'}`}>
+                {user?.profilePic ? (
+                    <img src={user.profilePic} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                    (user && user.name) ? user.name.charAt(0).toUpperCase() : 'G'
+                )}
             </div>
-            <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-gray-800 dark:text-white truncate">{user ? user.name : 'Guest User'}</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user ? user.email : 'Guest Mode'}</p>
+            <div className="overflow-hidden">
+                <h3 className="font-bold text-gray-800 dark:text-white truncate">{user ? user.name : 'Guest User'}</h3>
+                {/* Email hidden short view */}
             </div>
              <div className="text-gray-400 dark:text-gray-500">
                 {user ? (isDropdownOpen ? '▲' : '▼') : ''}
@@ -43,7 +57,7 @@ function Sidebar() {
 
         {/* Dropdown Menu - Only show if user exists */}
         {isDropdownOpen && user && (
-            <div className="absolute top-14 left-0 w-full bg-white dark:bg-dark-800 rounded-lg shadow-xl border border-gray-100 dark:border-dark-700 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-dark-800 rounded-lg shadow-xl border border-gray-100 dark:border-dark-700 overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
                 <button
                     onClick={() => { navigate('/profile'); setIsDropdownOpen(false); }}
                     className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-700 transition flex items-center gap-3"
@@ -74,7 +88,10 @@ function Sidebar() {
           {menuItems.map((item) => (
             <li key={item.name}>
               <button
-                onClick={() => navigate(item.path)}
+                onClick={() => { 
+                    navigate(item.path); 
+                    if (window.innerWidth < 768) toggle(); 
+                }}
                 className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   location.pathname === item.path
                     ? 'bg-brand-50 dark:bg-brand-900/10 text-brand-600 dark:text-brand-400'

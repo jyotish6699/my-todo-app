@@ -10,8 +10,8 @@ import { ThemeProvider } from './context/ThemeContext'
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider>
         <Router>
           <Routes>
               {/* Public/Guest Routes */}
@@ -34,8 +34,8 @@ function App() {
               <Route path='*' element={<Navigate to="/" />} />
           </Routes>
         </Router>
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   )
 }
 

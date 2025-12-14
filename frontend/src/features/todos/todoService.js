@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api') + '/todos/'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_URL = `${BASE_URL}/todos/`;
 
 const createTodo = async (todoData, token) => {
   const config = {
