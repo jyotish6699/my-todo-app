@@ -56,6 +56,26 @@ Follow these steps to deploy your Full Stack MERN Application for free.
 4. Check `VITE_API_BASE_URL`.
    - It should be: `https://your-backend-url.onrender.com/api`
    - **Important:** Ensure it ends with `/api` (no trailing slash).
+   - **Double Check:** Verify there are no typos, as this is the most common cause of connection issues.
+
+---
+
+## Step 5: Vercel Configuration (Important!)
+
+To prevent **404 Not Found** errors on page refresh (since this is a Single Page Application), you must ensure the `frontend/vercel.json` file exists with the following content:
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+This tells Vercel to redirect all traffic to `index.html`, allowing React Router to handle the routing.
 
 ---
 

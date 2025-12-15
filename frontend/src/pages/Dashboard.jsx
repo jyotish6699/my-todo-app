@@ -171,7 +171,7 @@ function Dashboard() {
                             onTodoAdded={handleTodoAdded} 
                             editingTodo={editingTodo} 
                             onUpdateTodo={handleFormUpdate}
-                            defaultSettings={user?.settings}
+                            defaultSettings={user?.settings || JSON.parse(localStorage.getItem('guestSettings') || '{}')}
                             onCancelEdit={() => {
                                 setEditingTodo(null)
                                 setShowPanel(true)
@@ -256,8 +256,10 @@ function Dashboard() {
 
                 {/* Dynamic Settings Classes */}
                 {(() => {
-                    const density = user?.settings?.viewDensity || 'comfortable';
-                    const styleType = user?.settings?.cardStyle || 'modern';
+                    // Get settings from User or LocalStorage (Guest)
+                    const guestSettings = !user ? JSON.parse(localStorage.getItem('guestSettings') || '{}') : {};
+                    const density = user?.settings?.viewDensity || guestSettings.viewDensity || 'comfortable';
+                    const styleType = user?.settings?.cardStyle || guestSettings.cardStyle || 'modern';
                     
                     const groupSpacing = density === 'compact' ? 'space-y-1' : 'space-y-3';
                     const itemPadding = density === 'compact' ? 'p-2' : 'p-4';

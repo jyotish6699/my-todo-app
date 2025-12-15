@@ -20,6 +20,8 @@ This document provides a detailed list of all technologies, languages, framework
   - _Why?_ Allows us to create reusable components (like `TodoForm`, `Sidebar`) and manage dynamic state efficiently.
 - **Vite**: A build tool and development server.
   - _Why?_ It is significantly faster than standard `create-react-app`, offering instant hot-reloading during development.
+- **LocalStorage API**: Web API for client-side storage.
+  - _Why?_ Persists data and preferences for Guest users who don't have a backend account.
 
 ### Backend
 

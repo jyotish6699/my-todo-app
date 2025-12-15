@@ -11,7 +11,7 @@ A modern, full-stack Task Management application built with the MERN stack (Mong
 - **📌 Sticky Notes**: Visual task management resembling digital sticky notes.
 - **🔄 Drag & Drop**: Reorder your tasks easily with smooth animations.
 - **⚙️ Customization**: Adjust view density, card styles, and dashboard colors.
-- **🏗️ Guest Mode**: Try the app functionality without creating an account.
+- **🏗️ Guest Mode**: Try the app functionality without creating an account. Settings and preferences are saved locally.
 - **📱 Responsive**: Works seamlessly on desktop and mobile devices (includes mobile-optimized layout).
 - **🔍 Filter & Search**: Easily find tasks by status (Today, Important, Completed).
 - **☁️ Hybrid Database**: Uses Local MongoDB for development and MongoDB Atlas for production.

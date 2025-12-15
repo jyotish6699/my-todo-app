@@ -27,12 +27,17 @@ function Settings() {
   const [changingPassword, setChangingPassword] = useState(false);
 
   // Default Settings State
-  const [defaultColor, setDefaultColor] = useState(user?.settings?.defaultColor || '');
-  const [defaultFontSize, setDefaultFontSize] = useState(user?.settings?.defaultFontSize || '18px');
-  const [defaultFontStyle, setDefaultFontStyle] = useState(user?.settings?.defaultFontStyle || 'sans-serif');
-  const [dashboardColor, setDashboardColor] = useState(user?.settings?.dashboardColor || '');
-  const [viewDensity, setViewDensity] = useState(user?.settings?.viewDensity || 'comfortable');
-  const [cardStyle, setCardStyle] = useState(user?.settings?.cardStyle || 'modern');
+  // Guest Settings Helper
+  const getGuestSettings = () => JSON.parse(localStorage.getItem('guestSettings') || '{}');
+  const guestSettings = getGuestSettings();
+
+  // Default Settings State
+  const [defaultColor, setDefaultColor] = useState(user?.settings?.defaultColor || guestSettings.defaultColor || '');
+  const [defaultFontSize, setDefaultFontSize] = useState(user?.settings?.defaultFontSize || guestSettings.defaultFontSize || '18px');
+  const [defaultFontStyle, setDefaultFontStyle] = useState(user?.settings?.defaultFontStyle || guestSettings.defaultFontStyle || 'sans-serif');
+  const [dashboardColor, setDashboardColor] = useState(user?.settings?.dashboardColor || guestSettings.dashboardColor || '');
+  const [viewDensity, setViewDensity] = useState(user?.settings?.viewDensity || guestSettings.viewDensity || 'comfortable');
+  const [cardStyle, setCardStyle] = useState(user?.settings?.cardStyle || guestSettings.cardStyle || 'modern');
 
   useEffect(() => {
     if (user) {
@@ -48,6 +53,7 @@ function Settings() {
             setCardStyle(user.settings.cardStyle || 'modern');
         }
     }
+    // Note: for guests, we rely on initial state or manual updates, no need to sync from "guest" object here unless we want to support external updates.
   }, [user]);
 
   const handleDelete = () => {
@@ -105,18 +111,29 @@ function Settings() {
 
 const handleProfileUpdate = async (e) => {
       e.preventDefault();
+      
+      const settingsPayload = {
+          defaultColor,
+          defaultFontSize,
+          defaultFontStyle,
+          dashboardColor,
+          viewDensity,
+          cardStyle
+      };
+
+      if (!user) {
+          // Guest User: Save to LocalStorage
+          localStorage.setItem('guestSettings', JSON.stringify(settingsPayload));
+          setToast({ show: true, message: 'Settings saved locally!' });
+          return;
+      }
+
+      // Logged in User: Save to Backend
       const success = await updateProfile({
           name,
           email,
           profilePic,
-          settings: {
-              defaultColor,
-              defaultFontSize,
-              defaultFontStyle,
-              dashboardColor,
-              viewDensity,
-              cardStyle
-          }
+          settings: settingsPayload
       });
       if (success) {
           await refetchUser();
@@ -210,6 +227,7 @@ const handleProfileUpdate = async (e) => {
             <div className="space-y-6">
                 
                 {/* Account Settings */}
+                {user && (
                 <div className="bg-white dark:bg-dark-800 p-6 rounded-xl border border-gray-200 dark:border-dark-700 shadow-sm transition-colors relative overflow-hidden">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-6 flex items-center gap-2">
                         <FaGlobe className="text-blue-500" /> Public Profile
@@ -226,12 +244,14 @@ const handleProfileUpdate = async (e) => {
                                         {(user && user.name) ? user.name.charAt(0).toUpperCase() : '?'}
                                     </div>
                                 )}
+                                {user && (
                                 <div 
                                     className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200 cursor-pointer"
                                     onClick={() => editingProfile && fileInputRef.current?.click()}
                                 >
                                     <FaCamera className="text-white text-xl" />
                                 </div>
+                                )}
                                 <input 
                                     type="file" 
                                     ref={fileInputRef} 
@@ -241,7 +261,7 @@ const handleProfileUpdate = async (e) => {
                                     disabled={!editingProfile}
                                 />
                              </div>
-                             {editingProfile && (
+                             {editingProfile && user && (
                                 <button 
                                     type="button"
                                     onClick={() => {
@@ -353,8 +373,10 @@ const handleProfileUpdate = async (e) => {
                         </div>
                     </div>
                 </div>
+                )}
 
                 {/* Password Settings */}
+                 {user && (
                  <div className="bg-white dark:bg-dark-800 p-6 rounded-xl border border-gray-200 dark:border-dark-700 shadow-sm transition-colors">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                         <FaLock className="text-yellow-500" /> Security
@@ -410,6 +432,7 @@ const handleProfileUpdate = async (e) => {
                         </div>
                     )}
                 </div>
+                 )}
 
                 {/* Appearance - REUSED */}
                 <div className="bg-white dark:bg-dark-800 p-6 rounded-xl border border-gray-200 dark:border-dark-700 shadow-sm transition-colors">
@@ -507,6 +530,7 @@ const handleProfileUpdate = async (e) => {
                 </div>
 
                  {/* Danger Zone */}
+                {user && (
                 <div className="bg-white dark:bg-dark-800 p-6 rounded-xl border border-red-100 dark:border-red-900/30 shadow-sm transition-colors">
                     <h3 className="text-lg font-semibold text-red-600 dark:text-red-500 mb-4 flex items-center gap-2">
                         <FaTrash /> Danger Zone
@@ -524,6 +548,7 @@ const handleProfileUpdate = async (e) => {
                         </button>
                     </div>
                 </div>
+                )}
 
                  {/* Version Info */}
                  <div className="text-center text-gray-400 dark:text-dark-500 text-sm pb-8">
