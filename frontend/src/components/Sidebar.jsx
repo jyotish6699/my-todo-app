@@ -36,8 +36,8 @@ function Sidebar({ isOpen, toggle }) {
       {/* Profile Section */}
       <div className="relative p-6 border-b border-gray-100 dark:border-dark-700 flex items-center gap-4">
         <div 
-            onClick={() => user && setIsDropdownOpen(!isDropdownOpen)} 
-            className={`flex items-center gap-3 px-2 p-2 rounded-xl transition-colors group ${user ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700' : ''}`}
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)} 
+            className="flex items-center gap-3 px-2 p-2 rounded-xl transition-colors group cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700"
         >
             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md overflow-hidden transition-transform ${user ? 'bg-brand-500 group-hover:scale-105' : 'bg-gray-400'}`}>
                 {user?.profilePic ? (
@@ -51,32 +51,50 @@ function Sidebar({ isOpen, toggle }) {
                 {/* Email hidden short view */}
             </div>
              <div className="text-gray-400 dark:text-gray-500">
-                {user ? (isDropdownOpen ? '▲' : '▼') : ''}
+                {isDropdownOpen ? '▲' : '▼'}
             </div>
         </div>
 
-        {/* Dropdown Menu - Only show if user exists */}
-        {isDropdownOpen && user && (
+        {/* Dropdown Menu */}
+        {isDropdownOpen && (
             <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-dark-800 rounded-lg shadow-xl border border-gray-100 dark:border-dark-700 overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
-                <button
-                    onClick={() => { navigate('/profile'); setIsDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-700 transition flex items-center gap-3"
-                >
-                    <FaUserCircle className="text-gray-400" /> Profile
-                </button>
+                
+                {/* User Only Options */}
+                {user && (
+                    <button
+                        onClick={() => { navigate('/profile'); setIsDropdownOpen(false); }}
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-700 transition flex items-center gap-3"
+                    >
+                        <FaUserCircle className="text-gray-400" /> Profile
+                    </button>
+                )}
+
+                {/* Common Options */}
                 <button
                     onClick={() => { navigate('/settings'); setIsDropdownOpen(false); }}
                     className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-700 transition flex items-center gap-3"
                 >
                     <FaCog className="text-gray-400" /> Settings
                 </button>
+
                 <div className="h-px bg-gray-100 dark:bg-dark-700 mx-2"></div>
-                <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition flex items-center gap-3"
-                >
-                    <FaSignOutAlt /> Logout
-                </button>
+                
+                {/* Login/Logout */}
+                {user ? (
+                    <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition flex items-center gap-3"
+                    >
+                        <FaSignOutAlt /> Logout
+                    </button>
+                ) : (
+                     <button
+                        onClick={() => { navigate('/login'); setIsDropdownOpen(false); }}
+                        className="w-full text-left px-4 py-3 text-sm text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/10 transition flex items-center gap-3"
+                    >
+                        <FaSignInAlt /> Log In
+                    </button>
+                )}
             </div>
         )}
       </div>
